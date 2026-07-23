@@ -1,0 +1,128 @@
+{
+  "46": {
+    "inputs": {
+      "filename_prefix": "Anima",
+      "images": [
+        "60:8",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Сохранить изображение"
+    }
+  },
+  "60:45": {
+    "inputs": {
+      "clip_name": "qwen_3_06b_base.safetensors",
+      "type": "stable_diffusion",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Загрузить CLIP"
+    }
+  },
+  "60:15": {
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Загрузить VAE"
+    }
+  },
+  "60:8": {
+    "inputs": {
+      "samples": [
+        "60:19",
+        0
+      ],
+      "vae": [
+        "60:15",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "Декодировать VAE"
+    }
+  },
+  "60:28": {
+    "inputs": {
+      "width": 768,
+      "height": 1024,
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "Пустое латентное изображение"
+    }
+  },
+  "60:12": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "60:45",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Negative Prompt)"
+    }
+  },
+  "60:19": {
+    "inputs": {
+      "seed": 0,
+      "steps": 10,
+      "cfg": 1,
+      "sampler_name": "er_sde",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "60:44",
+        0
+      ],
+      "positive": [
+        "60:11",
+        0
+      ],
+      "negative": [
+        "60:12",
+        0
+      ],
+      "latent_image": [
+        "60:28",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "60:11": {
+    "inputs": {
+      "text": "",
+	  "clip": [
+		  "60:45",
+		  0
+		]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Positive Prompt)"
+    }
+  },
+  "60:44": {
+    "inputs": {
+      "unet_name": "anima-turbo-v1.0.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Загрузить модель диффузии"
+    }
+  }
+}

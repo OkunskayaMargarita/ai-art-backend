@@ -1,0 +1,21 @@
+{
+  "Anima Default": {
+    "engine": "anima",
+    "base_positive": "masterpiece, best quality, high quality, 2d anime illustration, hand-drawn anime style, furry anime art, clean expressive lineart, crisp outlines, detailed cel shading, soft gradient shading, flat anime colors, stylized proportions, expressive anime face, polished digital illustration, smooth fur rendering, warm ambient lighting, score_7, no censor, no watermark, no text, explicit, erotic, hentai, no censorship, female body, feminine body",
+    "base_negative": "worst quality, low quality, lowres, blurry, jpeg artifacts, bad anatomy, malformed hands, extra fingers, extra limbs, duplicate body parts, distorted face, text, watermark, logo, signature, username, patreon, photorealistic, realistic photography, 3d render, cgi, pixar style, disney 3d style, plastic skin, realistic fur, hyperrealistic fur, octane render, unreal engine, doll-like face, score_1, score_2, score_3, artist name, censor, censorship, mutation",
+    "width": 1024,
+    "height": 1024,
+    "steps": 10,
+    "cfg": 1.0,
+    "batch_size": 1,
+    "batch_count": 1,
+    "sampler_name": "er_sde",
+    "scheduler": "simple",
+    "clip_skip": 1,
+    "hires_enabled": false,
+    "hires_steps": 20,
+    "hires_scale": 1.5,
+    "hires_upscaler": "R-ESRGAN 4x+ Anime6B",
+    "lora_tags": ""
+  }
+}
