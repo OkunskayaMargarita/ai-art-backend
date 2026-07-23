@@ -127,4 +127,5 @@ def generate_image(
         "generation_time_seconds": generation_time,
         "requested_settings": data.model_dump(),
         "effective_settings": effective_data.model_dump(),
+        "pose_result": prompt_data["pose_result"],
     }

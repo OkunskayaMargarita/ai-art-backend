@@ -8,6 +8,7 @@ class GenerateRequest(BaseModel):
     background: str = ""
     clothes: str = ""
     pose: str = ""
+    pose_preset_id: str = ""
     extra_tags: str = ""
     user_negative: str = ""
 

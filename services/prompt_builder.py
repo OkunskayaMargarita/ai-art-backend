@@ -1,6 +1,7 @@
 from models.generation import GenerateRequest
 from models.profile import ProfileData
 from services.character_prompt_enhancer import enhance_character_prompt
+from services.pose_service import resolve_pose
 
 
 def clean_part(value: str | None) -> str:
@@ -60,37 +61,6 @@ def build_character_prompt(character_name: str) -> tuple[str, dict, str | None]:
         )
 
 
-def choose_automatic_pose(
-    character: str,
-    background: str,
-) -> str:
-    background_lower = background.lower()
-
-    if any(
-        word in background_lower
-        for word in ("bed", "bedroom", "sofa", "couch")
-    ):
-        return (
-        "sitting on the bed in a relaxed confident pose, "
-        "upright posture, one hand resting beside the body, "
-        "looking at the viewer"
-    )
-
-    if any(
-        word in background_lower
-        for word in ("street", "park", "forest", "city")
-    ):
-        return "standing in a natural relaxed pose"
-
-    if character:
-        return (
-        "confident relaxed pose, natural body language, "
-        "looking at the viewer"
-    )
-
-    return ""
-
-
 def choose_composition(pose: str) -> str:
     pose_lower = pose.lower()
 
@@ -148,13 +118,14 @@ def build_prompt(
         character_warning,
     ) = build_character_prompt(data.character)
 
-    final_pose = clean_part(data.pose)
-
-    if not final_pose:
-        final_pose = choose_automatic_pose(
-            character=data.character,
-            background=data.background,
-        )
+    pose_result = resolve_pose(
+        manual_pose=data.pose,
+        pose_preset_id=data.pose_preset_id,
+        environment=data.background,
+        width=data.width,
+        height=data.height,
+    )
+    final_pose = pose_result["prompt"]
 
     automatic_composition = choose_composition(final_pose)
 
@@ -184,4 +155,5 @@ def build_prompt(
         "character_warning": character_warning,
         "selected_pose": final_pose,
         "selected_composition": automatic_composition,
+        "pose_result": pose_result,
     }

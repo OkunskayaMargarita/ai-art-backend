@@ -1,0 +1,164 @@
+{
+  "id": "sitting_relaxed_on_support",
+  "name": "Сидит на опоре — расслабленно",
+  "description": "Расслабленная сидячая композиция на подходящей широкой опоре.",
+  "search_terms": [
+    "сидит",
+    "сидя",
+    "расслабленно",
+    "опора",
+    "кровать",
+    "диван",
+    "кушетка",
+    "sitting",
+    "relaxed"
+  ],
+  "compatible_contexts": [
+    "bed",
+    "bedroom",
+    "sofa",
+    "couch",
+    "daybed",
+    "chaise",
+    "bench",
+    "seat",
+    "room",
+    "interior"
+  ],
+  "incompatible_contexts": [
+    "running",
+    "swimming"
+  ],
+  "required_context_any": [],
+  "orientation": [
+    "portrait",
+    "landscape",
+    "square",
+    "any"
+  ],
+  "layouts": [
+    {
+      "id": "near_edge",
+      "name": "У края опоры",
+      "weight": 1.0,
+      "required": [
+        "sitting comfortably near the edge of a broad supporting surface",
+        "relaxed natural posture"
+      ],
+      "variants": {
+        "body": [
+          {
+            "text": "body turned slightly three-quarter toward the viewer",
+            "weight": 1.0
+          },
+          {
+            "text": "torso facing the viewer with a gentle hip shift",
+            "weight": 0.9
+          }
+        ],
+        "legs": [
+          {
+            "text": "one knee slightly raised",
+            "weight": 1.0
+          },
+          {
+            "text": "legs resting naturally to one side",
+            "weight": 1.0
+          },
+          {
+            "text": "legs folded loosely",
+            "weight": 0.8
+          }
+        ],
+        "hands": [
+          {
+            "text": "one hand resting on the supporting surface",
+            "weight": 1.0
+          },
+          {
+            "text": "one hand resting lightly on the thigh",
+            "weight": 0.9
+          },
+          {
+            "text": "both hands resting naturally near the body",
+            "weight": 0.8
+          }
+        ],
+        "head": [
+          {
+            "text": "head tilted slightly",
+            "weight": 0.8
+          },
+          {
+            "text": "face turned slightly toward the viewer",
+            "weight": 1.0
+          }
+        ],
+        "camera": [
+          {
+            "text": "eye-level anime camera angle",
+            "weight": 1.0
+          },
+          {
+            "text": "slight three-quarter camera angle",
+            "weight": 0.9
+          }
+        ]
+      }
+    },
+    {
+      "id": "centered_relaxed",
+      "name": "Свободно сидит по центру",
+      "weight": 0.9,
+      "required": [
+        "sitting comfortably on a broad supporting surface",
+        "relaxed balanced posture"
+      ],
+      "variants": {
+        "body": [
+          {
+            "text": "upper body leaning back slightly",
+            "weight": 1.0
+          },
+          {
+            "text": "body angled gently toward one side",
+            "weight": 0.9
+          }
+        ],
+        "legs": [
+          {
+            "text": "one leg folded while the other rests more loosely",
+            "weight": 1.0
+          },
+          {
+            "text": "both legs bent in an asymmetrical relaxed position",
+            "weight": 1.0
+          }
+        ],
+        "hands": [
+          {
+            "text": "one arm supporting the body from behind",
+            "weight": 1.0
+          },
+          {
+            "text": "one hand placed casually beside the hip",
+            "weight": 0.9
+          }
+        ],
+        "camera": [
+          {
+            "text": "balanced medium full shot",
+            "weight": 1.0
+          },
+          {
+            "text": "gentle front three-quarter view",
+            "weight": 0.9
+          }
+        ]
+      }
+    }
+  ],
+  "enabled": true,
+  "selection_weight": 1.0,
+  "optional_group_chance": 0.72
+}

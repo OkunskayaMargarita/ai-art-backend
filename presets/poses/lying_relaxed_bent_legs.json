@@ -1,0 +1,200 @@
+{
+  "id": "lying_relaxed_bent_legs",
+  "name": "Лежит — ноги подогнуты",
+  "description": "Расслабленная поза лёжа с согнутыми ногами на подходящей горизонтальной поверхности.",
+  "search_terms": [
+    "лежит",
+    "лежа",
+    "ноги подогнуты",
+    "lying",
+    "reclining",
+    "bent legs",
+    "relaxed"
+  ],
+  "compatible_contexts": [
+    "bed",
+    "bedroom",
+    "sofa",
+    "couch",
+    "daybed",
+    "chaise",
+    "floor",
+    "rug",
+    "mat",
+    "meadow",
+    "grass",
+    "beach",
+    "room",
+    "interior"
+  ],
+  "incompatible_contexts": [
+    "standing only",
+    "running"
+  ],
+  "required_context_any": [],
+  "orientation": [
+    "portrait",
+    "landscape",
+    "square",
+    "any"
+  ],
+  "layouts": [
+    {
+      "id": "partly_on_side",
+      "name": "Частично на боку",
+      "weight": 1.0,
+      "required": [
+        "lying comfortably on a horizontal surface",
+        "legs softly bent",
+        "body resting partly on the side"
+      ],
+      "variants": {
+        "torso": [
+          {
+            "text": "torso angled slightly toward the viewer",
+            "weight": 1.0
+          },
+          {
+            "text": "upper body supported by one forearm",
+            "weight": 0.8
+          }
+        ],
+        "legs": [
+          {
+            "text": "knees bent gently to one side",
+            "weight": 1.0
+          },
+          {
+            "text": "one leg bent more than the other",
+            "weight": 1.0
+          },
+          {
+            "text": "legs loosely folded",
+            "weight": 0.9
+          }
+        ],
+        "hands": [
+          {
+            "text": "one arm resting near the head",
+            "weight": 1.0
+          },
+          {
+            "text": "one hand resting lightly on the body",
+            "weight": 0.9
+          },
+          {
+            "text": "both arms resting naturally on the surface",
+            "weight": 1.0
+          }
+        ],
+        "head": [
+          {
+            "text": "face turned slightly toward the viewer",
+            "weight": 1.0
+          },
+          {
+            "text": "head tilted back slightly",
+            "weight": 0.6
+          }
+        ],
+        "camera": [
+          {
+            "text": "slightly elevated anime camera angle",
+            "weight": 1.0
+          },
+          {
+            "text": "three-quarter view",
+            "weight": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "on_back_turned_torso",
+      "name": "На спине с поворотом корпуса",
+      "weight": 0.9,
+      "required": [
+        "lying on the back on a horizontal surface",
+        "knees softly bent",
+        "torso turned slightly toward one side"
+      ],
+      "variants": {
+        "legs": [
+          {
+            "text": "one knee raised higher than the other",
+            "weight": 1.0
+          },
+          {
+            "text": "both knees leaning gently to one side",
+            "weight": 0.9
+          }
+        ],
+        "hands": [
+          {
+            "text": "one arm resting beside the head",
+            "weight": 1.0
+          },
+          {
+            "text": "one hand resting near the waist",
+            "weight": 0.9
+          }
+        ],
+        "camera": [
+          {
+            "text": "view from near the feet",
+            "weight": 0.8
+          },
+          {
+            "text": "slightly elevated front three-quarter view",
+            "weight": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "upper_body_raised",
+      "name": "Верхняя часть тела приподнята",
+      "weight": 0.8,
+      "required": [
+        "reclining on a horizontal surface",
+        "legs bent in a relaxed asymmetrical position",
+        "upper body slightly raised"
+      ],
+      "variants": {
+        "support": [
+          {
+            "text": "upper body supported by both arms behind the body",
+            "weight": 1.0
+          },
+          {
+            "text": "upper body supported by one elbow",
+            "weight": 0.9
+          }
+        ],
+        "head": [
+          {
+            "text": "head turned toward the viewer",
+            "weight": 1.0
+          },
+          {
+            "text": "gaze directed slightly away",
+            "weight": 0.8
+          }
+        ],
+        "camera": [
+          {
+            "text": "eye-level three-quarter view",
+            "weight": 1.0
+          },
+          {
+            "text": "slightly low front angle",
+            "weight": 0.6
+          }
+        ]
+      }
+    }
+  ],
+  "enabled": true,
+  "selection_weight": 1.0,
+  "optional_group_chance": 0.7
+}

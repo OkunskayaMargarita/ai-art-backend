@@ -1,0 +1,128 @@
+{
+  "id": "standing_relaxed",
+  "name": "Стоит — расслабленная поза",
+  "description": "Универсальная расслабленная композиция стоя.",
+  "search_terms": [
+    "стоит",
+    "стоя",
+    "расслабленно",
+    "standing",
+    "relaxed",
+    "casual"
+  ],
+  "compatible_contexts": [
+    "any"
+  ],
+  "incompatible_contexts": [],
+  "required_context_any": [],
+  "orientation": [
+    "portrait",
+    "landscape",
+    "square",
+    "any"
+  ],
+  "layouts": [
+    {
+      "id": "weight_shift",
+      "name": "Перенос веса на одну ногу",
+      "weight": 1.0,
+      "required": [
+        "standing in a relaxed natural pose",
+        "weight shifted slightly onto one leg"
+      ],
+      "variants": {
+        "body": [
+          {
+            "text": "body turned slightly three-quarter",
+            "weight": 1.0
+          },
+          {
+            "text": "upright confident posture",
+            "weight": 0.8
+          }
+        ],
+        "hands": [
+          {
+            "text": "one hand resting naturally near the hip",
+            "weight": 1.0
+          },
+          {
+            "text": "arms resting loosely at the sides",
+            "weight": 1.0
+          },
+          {
+            "text": "hands held casually behind the back",
+            "weight": 0.7
+          }
+        ],
+        "head": [
+          {
+            "text": "looking toward the viewer",
+            "weight": 1.0
+          },
+          {
+            "text": "looking slightly to the side",
+            "weight": 0.8
+          },
+          {
+            "text": "head tilted slightly",
+            "weight": 0.7
+          }
+        ],
+        "camera": [
+          {
+            "text": "medium full shot",
+            "weight": 1.0
+          },
+          {
+            "text": "full body anime composition",
+            "weight": 0.8
+          }
+        ]
+      }
+    },
+    {
+      "id": "open_stance",
+      "name": "Открытая свободная стойка",
+      "weight": 0.85,
+      "required": [
+        "standing naturally with an open relaxed stance"
+      ],
+      "variants": {
+        "body": [
+          {
+            "text": "hips angled slightly away from the shoulders",
+            "weight": 1.0
+          },
+          {
+            "text": "subtle S-curve through the body",
+            "weight": 0.8
+          }
+        ],
+        "hands": [
+          {
+            "text": "one arm hanging loosely while the other is slightly bent",
+            "weight": 1.0
+          },
+          {
+            "text": "one hand gesturing casually",
+            "weight": 0.8
+          }
+        ],
+        "camera": [
+          {
+            "text": "eye-level full body view",
+            "weight": 1.0
+          },
+          {
+            "text": "gentle three-quarter view",
+            "weight": 0.9
+          }
+        ]
+      }
+    }
+  ],
+  "enabled": true,
+  "selection_weight": 1.2,
+  "optional_group_chance": 0.7
+}
