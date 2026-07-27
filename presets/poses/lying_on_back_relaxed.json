@@ -1,0 +1,107 @@
+{
+  "id": "lying_on_back_relaxed",
+  "name": "Лежит на спине — расслабленно",
+  "description": "Расслабленная поза лёжа на спине с открытой композицией корпуса.",
+  "search_terms": [
+    "лежит",
+    "лежа",
+    "на спине",
+    "спина",
+    "relaxed",
+    "lying",
+    "lying on back",
+    "supine",
+    "resting"
+  ],
+  "compatible_contexts": [
+    "bed",
+    "bedroom",
+    "sofa",
+    "couch",
+    "daybed",
+    "chaise",
+    "floor",
+    "rug",
+    "mat",
+    "interior"
+  ],
+  "incompatible_contexts": [
+    "standing",
+    "running",
+    "swimming"
+  ],
+  "required_context_any": [],
+  "orientation": [
+    "portrait",
+    "landscape",
+    "square",
+    "any"
+  ],
+  "layouts": [
+    {
+      "id": "arms_relaxed_near_body",
+      "name": "Руки расслабленно возле корпуса",
+      "weight": 1.0,
+      "required": [
+        "lying on the back on a horizontal surface",
+        "legs straightened and separated",
+        "head supported by the supporting surface",
+		"head and face are fully visible",
+		"vagina is visible",
+		"hands rest loosely on the body"
+      ],
+      "variants": {
+        "torso": [
+          {
+            "text": "torso aligned naturally with the body",
+            "weight": 1.0
+          },
+          {
+            "text": "hips rotated slightly to one side",
+            "weight": 0.8
+          }
+        ],
+        "legs": [
+		  {
+            "text": "legs resting in a relaxed open stance",
+            "weight": 1
+          }
+        ],
+        "arms": [
+          {
+            "text": "both arms resting naturally beside the body",
+            "weight": 1
+          },
+          {
+            "text": "one forearm resting across the lower abdomen or pelvis",
+            "weight": 0.9
+          }
+        ],
+        "head": [
+          {
+            "text": "head facing generally upward",
+            "weight": 1.0
+          },
+          {
+            "text": "head turned slightly to one side",
+            "weight": 0.8
+          }
+        ],
+        "camera": [
+          {
+            "text": "slightly elevated overhead angle",
+            "weight": 1
+          },
+		  {
+            "text": "high-angle shot",
+            "weight": 0.9
+          }
+        ]
+      },
+      "optional_group_chance": 0.7
+    }
+  ],
+  "enabled": true,
+  "selection_weight": 1.0,
+  "optional_group_chance": 0.7
+}

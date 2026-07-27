@@ -1,0 +1,208 @@
+{
+  "id": "lying_prone",
+  "name": "Лежит на животе",
+  "description": "Универсальная композиция лёжа на животе с вариативным положением корпуса, рук, ног и направлением взгляда.",
+  "search_terms": [
+    "лежит",
+    "лежа",
+    "на животе",
+    "лицом вниз",
+    "плашмя",
+    "prone",
+    "lying on stomach",
+    "lying face down",
+    "face down",
+    "on belly",
+    "belly down",
+    "relaxed"
+  ],
+  "compatible_contexts": [
+    "bed",
+    "bedroom",
+    "sofa",
+    "couch",
+    "daybed",
+    "chaise",
+    "floor",
+    "rug",
+    "mat",
+    "grass",
+    "meadow",
+    "beach",
+    "interior"
+  ],
+  "incompatible_contexts": [
+    "standing",
+    "running",
+    "swimming"
+  ],
+  "required_context_any": [],
+  "orientation": [
+    "portrait",
+    "landscape",
+    "square",
+    "any"
+  ],
+  "layouts": [
+      {
+      "id": "looking_back_over_shoulder",
+      "name": "Оглядывается через плечо",
+      "weight": 1.0,
+      "required": [
+        "lying comfortably on the stomach on a horizontal surface",
+        "upper body supported naturally by the forearms or elbows",
+        "pelvis resting on the supporting surface",
+        "head turned back over one shoulder toward the camera"
+      ],
+      "variants": {
+        "torso": [
+          {
+            "text": "upper body raised slightly from the surface",
+            "weight": 1.0
+          },
+          {
+            "text": "chest resting closer to the supporting surface",
+            "weight": 0.8
+          }
+        ],
+        "legs": [
+          {
+            "text": "legs extended naturally behind the body",
+            "weight": 1.0
+          },
+          {
+            "text": "one knee bent slightly while the other remains extended",
+            "weight": 0.8
+          },
+          {
+            "text": "feet resting naturally with relaxed ankles",
+            "weight": 0.8
+          }
+        ],
+        "arms": [
+          {
+            "text": "body supported evenly on both forearms",
+            "weight": 1.0
+          },
+          {
+            "text": "more weight resting on one forearm",
+            "weight": 0.9
+          },
+          {
+            "text": "one hand resting lightly beneath the upper body",
+            "weight": 0.7
+          }
+        ],
+        "head": [
+          {
+            "text": "looking back over one shoulder toward the camera",
+            "weight": 1.0
+          },
+          {
+            "text": "head turned back with a slight downward tilt",
+            "weight": 0.8
+          },
+          {
+            "text": "head turned back with a gentle sideways tilt",
+            "weight": 0.7
+          }
+        ],
+        "camera": [
+          {
+            "text": "low rear three-quarter view",
+            "weight": 1.0
+          },
+          {
+            "text": "rear view aligned slightly off-center",
+            "weight": 0.9
+          },
+          {
+            "text": "slightly elevated rear three-quarter angle",
+            "weight": 0.7
+          }
+        ]
+      },
+      "optional_group_chance": 0.7
+    },
+	{
+	  "id": "arms_reaching_back",
+	  "name": "Руки заведены назад",
+	  "weight": 0.9,
+	  "required": [
+		"lying on the stomach on a horizontal surface",
+		"resting on the knees",
+		"both arms reaching backward along the sides of the body",
+		"her hands spread the buttocks",
+		"the anus and vagina are visible"
+	  ],
+	  "variants": {
+		"torso": [
+		  {
+			"text": "upper body resting naturally on the supporting surface",
+			"weight": 1.0
+		  },
+		  {
+			"text": "chest raised slightly from the supporting surface",
+			"weight": 0.7
+		  }
+		],
+		"arms": [
+		  {
+			"text": "hands resting on the outer hips",
+			"weight": 1.0
+		  },
+		  {
+			"text": "hands resting on the upper thighs",
+			"weight": 0.9
+		  },
+		  {
+			"text": "hands placed symmetrically along the sides of the pelvis",
+			"weight": 0.8
+		  }
+		],
+		"legs": [
+		  {
+			"text": "legs extended comfortably with knees close together",
+			"weight": 1.0
+		  },
+		  {
+			"text": "one knee bent slightly",
+			"weight": 0.7
+		  },
+		  {
+			"text": "feet resting naturally with relaxed ankles",
+			"weight": 0.8
+		  }
+		],
+		"head": [
+		  {
+			"text": "head turned back over one shoulder",
+			"weight": 1.0
+		  },
+		  {
+			"text": "head turned slightly to one side",
+			"weight": 0.8
+		  }
+		],
+		"camera": [
+		  {
+			"text": "rear view aligned with the body axis",
+			"weight": 1.0
+		  },
+		  {
+			"text": "slightly elevated rear view",
+			"weight": 0.8
+		  },
+		  {
+			"text": "rear three-quarter view",
+			"weight": 0.7
+		  }
+		]
+	  },
+	  "optional_group_chance": 0.7
+	}
+  ],
+  "enabled": true,
+  "selection_weight": 1.0,
+  "optional_group_chance": 0.7
+}

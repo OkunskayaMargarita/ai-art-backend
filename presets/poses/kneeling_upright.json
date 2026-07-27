@@ -1,0 +1,112 @@
+{
+  "id": "kneeling_upright",
+  "name": "Стоит на коленях",
+  "description": "Универсальная композиция с персонажем, стоящим на коленях на подходящей горизонтальной поверхности.",
+  "search_terms": [
+    "на коленях",
+    "стоит на коленях",
+    "колени",
+    "kneeling",
+    "kneel",
+    "upright kneeling",
+    "seiza",
+    "knees",
+    "стоя на коленях"
+  ],
+  "compatible_contexts": [
+    "bed",
+    "bedroom",
+    "floor",
+    "rug",
+    "mat",
+    "tatami",
+    "grass",
+    "meadow",
+    "platform",
+    "interior"
+  ],
+  "incompatible_contexts": [
+    "chair",
+    "vehicle",
+    "swimming",
+    "running"
+  ],
+  "required_context_any": [],
+  "orientation": [
+    "portrait",
+    "landscape",
+    "square",
+    "any"
+  ],
+  "layouts": [
+    {
+      "id": "sitting_on_heels",
+      "name": "Сидит на пятках",
+      "weight": 1.0,
+      "required": [
+        "kneeling on a horizontal surface",
+        "hips resting on or close to the heels",
+        "upright torso",
+		"anus and vagina are visible"
+      ],
+      "variants": {
+        "torso": [
+          {
+            "text": "torso facing mostly away from the camera",
+            "weight": 1.0
+          },
+          {
+            "text": "torso rotated slightly toward one side",
+            "weight": 0.9
+          }
+        ],
+        "arms": [
+		  {
+			"text": "hands resting on the outer hips",
+			"weight": 1.0
+		  },
+		  {
+			"text": "hands resting on the upper thighs",
+			"weight": 0.9
+		  },
+		  {
+			"text": "hands placed symmetrically along the sides of the pelvis",
+			"weight": 0.8
+		  },
+		  {
+			"text": "both hands resting naturally in front of the body",
+			"weight": 0.7
+		  },
+		  {
+			"text": "one forearm resting on a nearby surface",
+			"weight": 0.6
+		  }
+        ],
+        "head": [
+          {
+            "text": "head turned back over one shoulder",
+            "weight": 1.0
+          },
+          {
+            "text": "head turned slightly to one side",
+            "weight": 0.8
+          }
+        ],
+        "camera": [
+          {
+            "text": "low rear three-quarter view",
+            "weight": 1.0
+          },
+          {
+            "text": "rear three-quarter eye-level view",
+            "weight": 0.8
+          }
+        ]
+      },
+      "optional_group_chance": 0.7
+    }
+  ],
+  "enabled": true,
+  "selection_weight": 1.0,
+  "optional_group_chance": 0.7
+}
