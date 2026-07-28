@@ -119,6 +119,7 @@ def build_prompt(
     ) = build_character_prompt(data.character)
 
     pose_result = resolve_pose(
+        pose_mode=data.pose_mode,
         manual_pose=data.pose,
         pose_preset_id=data.pose_preset_id,
         environment=data.background,
@@ -127,7 +128,10 @@ def build_prompt(
     )
     final_pose = pose_result["prompt"]
 
-    automatic_composition = choose_composition(final_pose)
+    if pose_result["source"] == "free":
+        automatic_composition = ""
+    else:
+        automatic_composition = choose_composition(final_pose)
 
     final_prompt = join_prompt_parts(
         [

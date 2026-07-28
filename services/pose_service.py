@@ -195,16 +195,36 @@ def choose_automatic_pose(context: str, width: int, height: int) -> PosePreset:
 
 
 def resolve_pose(
+    pose_mode: str,
     manual_pose: str,
     pose_preset_id: str,
     environment: str,
     width: int,
     height: int,
 ) -> dict:
+    pose_mode = pose_mode.strip().lower()
     manual_pose = manual_pose.strip()
     pose_preset_id = pose_preset_id.strip()
+    
+    # Пользователь сознательно не задаёт позу.
+    if pose_mode == "free":
+        return {
+            "source": "free",
+            "preset_id": None,
+            "preset_name": None,
+            "layout_id": None,
+            "layout_name": None,
+            "prompt": "",
+            "selected_variants": {},
+        }
 
-    if manual_pose:
+    if pose_mode == "manual":
+        if not manual_pose:
+            raise RuntimeError(
+                "Выбран ручной режим позы, "
+                "но текстовое описание не заполнено."
+            )
+
         return {
             "source": "manual",
             "preset_id": None,
@@ -215,17 +235,41 @@ def resolve_pose(
             "selected_variants": {},
         }
 
-    if pose_preset_id:
+    if pose_mode == "preset":
+        if not pose_preset_id:
+            raise RuntimeError(
+                "Выбран режим пресета, "
+                "но пресет позы не указан."
+            )
+
         preset = get_pose_preset(pose_preset_id)
+
         if preset is None:
-            raise RuntimeError(f"Пресет позы «{pose_preset_id}» не найден.")
+            raise RuntimeError(
+                f"Пресет позы «{pose_preset_id}» не найден."
+            )
+
         source = "preset"
-    else:
-        preset = choose_automatic_pose(environment, width, height)
+
+    elif pose_mode == "automatic":
+        preset = choose_automatic_pose(
+            context=environment,
+            width=width,
+            height=height,
+        )
         source = "automatic"
 
+    else:
+        raise RuntimeError(
+            f"Неизвестный режим позы: {pose_mode}"
+        )
+
     layout = choose_layout(preset)
-    prompt, variants = build_pose_prompt(preset, layout)
+
+    pose_prompt, variants = build_pose_prompt(
+        preset=preset,
+        layout=layout,
+    )
 
     return {
         "source": source,
@@ -233,6 +277,6 @@ def resolve_pose(
         "preset_name": preset.name,
         "layout_id": layout.id,
         "layout_name": layout.name or layout.id,
-        "prompt": prompt,
+        "prompt": pose_prompt,
         "selected_variants": variants,
     }

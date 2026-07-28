@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-
+from typing import Literal
 
 class GenerateRequest(BaseModel):
     profile_name: str = ""
@@ -7,8 +7,17 @@ class GenerateRequest(BaseModel):
     character: str = ""
     background: str = ""
     clothes: str = ""
+    
+    pose_mode: Literal[
+        "automatic",
+        "preset",
+        "manual",
+        "free",
+    ] = "automatic"
+    
     pose: str = ""
     pose_preset_id: str = ""
+    
     extra_tags: str = ""
     user_negative: str = ""
 
