@@ -21,8 +21,8 @@ class GenerateRequest(BaseModel):
     extra_tags: str = ""
     user_negative: str = ""
 
-    width: int = Field(default=768, ge=64, le=2048)
-    height: int = Field(default=1024, ge=64, le=2048)
+    width: int = Field(default=768, ge=64, le=4096)
+    height: int = Field(default=1024, ge=64, le=4096)
 
     steps: int = Field(default=10, ge=1, le=50)
     cfg: float = Field(default=1.0, ge=0.0, le=30.0)
