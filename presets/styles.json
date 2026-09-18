@@ -1,0 +1,10 @@
+{
+  "default": {
+    "name": "2D классический (рекомендуемый)",
+    "prompt": "clean expressive lineart, detailed cel shading, polished digital illustration"
+  },
+  "none": {
+    "name": "Без указания стиля",
+    "prompt": ""
+  }
+}

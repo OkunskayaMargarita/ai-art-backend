@@ -7,6 +7,7 @@ from api.profiles import router as profiles_router
 from api.models import router as models_router
 from api.characters import router as characters_router
 from api.poses import router as poses_router
+from api.styles import router as styles_router
 from config.settings import OUTPUT_DIR
 
 app = FastAPI(
@@ -30,6 +31,7 @@ app.include_router(profiles_router)
 app.include_router(models_router)
 app.include_router(characters_router)
 app.include_router(poses_router)
+app.include_router(styles_router)
 
 app.mount(
     "/outputs",

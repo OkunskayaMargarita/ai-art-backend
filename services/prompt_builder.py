@@ -4,6 +4,7 @@ from models.generation import GenerateRequest
 from models.profile import ProfileData
 from services.character_prompt_enhancer import enhance_character_prompt
 from services.pose_service import resolve_pose
+from services.style_service import get_style_prompt
 
 
 def clean_part(value: str | None) -> str:
@@ -136,6 +137,8 @@ def build_prompt(
         character_data,
         character_warning,
     ) = build_character_prompt(data.character)
+    
+    style_prompt = get_style_prompt(data.style_name)
 
     pose_result = resolve_pose(
         pose_mode=data.pose_mode,
@@ -164,6 +167,7 @@ def build_prompt(
     final_prompt = join_prompt_parts(
         [
             profile.base_positive,
+            style_prompt,
             character_prompt,
             data.clothes,
             final_pose,
@@ -181,15 +185,17 @@ def build_prompt(
     )
     
     final_prompt = apply_profile_prompt_replacements(
-    final_prompt,
-    data.profile_name,
-)
+        final_prompt,
+        data.profile_name,
+    )
 
     return {
         "prompt": final_prompt,
         "negative_prompt": final_negative_prompt,
         "character_data": character_data,
         "character_warning": character_warning,
+        "selected_style": data.style_name,
+        "style_prompt": style_prompt,
         "selected_pose": final_pose,
         "selected_composition": automatic_composition,
         "pose_result": pose_result,

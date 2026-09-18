@@ -1,7 +1,7 @@
 {
   "Default": {
     "engine": "anima",
-    "base_positive": "masterpiece, best quality, clean expressive lineart, detailed cel shading, polished digital illustration, explicit, hentai, feminine body",
+    "base_positive": "masterpiece, best quality, explicit, hentai, feminine body",
     "base_negative": "worst quality, low quality, lowres, blurry, jpeg artifacts, bad anatomy, malformed hands, extra fingers, extra limbs, duplicate body parts, distorted face, text, watermark, logo, signature, photorealistic, realistic photography, plastic skin, doll-like face, censor",
     "width": 1024,
     "height": 1024,
@@ -20,7 +20,7 @@
   },
     "Futa": {
     "engine": "anima",
-    "base_positive": "masterpiece, best quality, clean expressive lineart, detailed cel shading, polished digital illustration, explicit, hentai, feminine body, transgender woman, femboy, futa, futanari, female penis",
+    "base_positive": "masterpiece, best quality, explicit, hentai, feminine body, transgender woman, femboy, futa, futanari, female penis",
     "base_negative": "worst quality, low quality, lowres, blurry, jpeg artifacts, bad anatomy, malformed hands, extra fingers, extra limbs, duplicate body parts, distorted face, text, watermark, logo, signature, photorealistic, realistic photography, plastic skin, doll-like face, censor, vagina",
     "width": 1024,
     "height": 1024,

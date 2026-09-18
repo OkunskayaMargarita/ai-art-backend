@@ -3,6 +3,7 @@ from typing import Literal
 
 class GenerateRequest(BaseModel):
     profile_name: str = ""
+    style_name: str = "default"
 
     character: str = ""
     background: str = ""
