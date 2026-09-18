@@ -154,6 +154,12 @@ def build_prompt(
             final_pose,
             pose_result,
         )
+        
+    background_prompt = (
+        data.background.strip()
+        if data.background.strip()
+        else "character in detailed furnished and light room"
+    )
 
     final_prompt = join_prompt_parts(
         [
@@ -162,7 +168,7 @@ def build_prompt(
             data.clothes,
             final_pose,
             automatic_composition,
-            data.background,
+            background_prompt,
             data.extra_tags,
         ]
     )
