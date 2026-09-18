@@ -45,26 +45,13 @@
       "required": [
         "lying on the back on a horizontal surface",
         "legs straightened and separated",
-        "head supported by the supporting surface",
-		"head and face are fully visible",
-		"vagina is visible",
-		"hands rest loosely on the body"
+		"vagina is visible"
       ],
       "variants": {
         "torso": [
           {
-            "text": "torso aligned naturally with the body",
-            "weight": 1.0
-          },
-          {
             "text": "hips rotated slightly to one side",
             "weight": 0.8
-          }
-        ],
-        "legs": [
-		  {
-            "text": "legs resting in a relaxed open stance",
-            "weight": 1
           }
         ],
         "arms": [

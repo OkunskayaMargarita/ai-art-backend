@@ -96,7 +96,7 @@
         ],
         "camera": [
           {
-            "text": "eye-level anime camera angle",
+            "text": "eye-level camera angle",
             "weight": 1.0
           },
           {
@@ -147,7 +147,7 @@
         ],
         "camera": [
           {
-            "text": "balanced medium full shot",
+            "text": "medium full shot",
             "weight": 1.0
           },
           {
@@ -156,86 +156,7 @@
           }
         ]
       }
-    },
-  {
-    "id": "foreshortened_between_legs",
-    "name": "Ракурс между согнутыми ногами",
-    "weight": 0.8,
-    "required": [
-      "lying on the back on a horizontal surface",
-      "both legs bent and positioned on opposite sides of the frame",
-      "pelvis directed toward the camera",
-      "strong perspective foreshortening from a low frontal viewpoint"
-    ],
-    "variants": {
-      "legs": [
-        {
-          "text": "one knee positioned noticeably closer to the camera than the other",
-          "weight": 1.0
-        },
-        {
-          "text": "both knees raised with mild asymmetry",
-          "weight": 0.9
-        },
-        {
-          "text": "one leg raised higher while the other remains bent lower",
-          "weight": 0.8
-        }
-      ],
-      "torso": [
-        {
-          "text": "upper body resting flat on the supporting surface",
-          "weight": 1.0
-        },
-        {
-          "text": "upper torso turned slightly to one side",
-          "weight": 0.8
-        },
-        {
-          "text": "shoulders raised slightly from the supporting surface",
-          "weight": 0.7
-        }
-      ],
-      "hands": [
-        {
-          "text": "arms resting naturally beside the torso",
-          "weight": 1.0
-        },
-        {
-          "text": "one hand resting on the supporting surface near the hip",
-          "weight": 0.9
-        },
-        {
-          "text": "one arm bent loosely beside the upper body",
-          "weight": 0.8
-        }
-      ],
-      "head": [
-        {
-          "text": "face angled generally toward the camera",
-          "weight": 1.0
-        },
-        {
-          "text": "head turned slightly to one side",
-          "weight": 0.8
-        },
-        {
-          "text": "chin lowered slightly toward the torso",
-          "weight": 0.7
-        }
-      ],
-      "camera": [
-        {
-          "text": "extreme low frontal view from between the bent legs",
-          "weight": 1.0
-        },
-        {
-          "text": "low diagonal view from near one bent leg",
-          "weight": 0.8
-        }
-      ]
-    },
-  ],
+    }
   "enabled": true,
   "selection_weight": 1.0,
   "optional_group_chance": 0.72

@@ -63,39 +63,39 @@ def build_character_prompt(character_name: str) -> tuple[str, dict, str | None]:
         )
 
 
-def choose_composition(pose: str) -> str:
+def choose_composition(
+    pose: str,
+    pose_result: dict,
+) -> str:
+    selected_variants = pose_result.get(
+        "selected_variants",
+        {}
+    )
+
+    if selected_variants.get("camera"):
+        return ""
+        
     pose_lower = pose.lower()
 
     if any(
         word in pose_lower
         for word in ("lying", "reclining", "on the bed")
     ):
-        return (
-            "full body composition, natural camera angle, "
-            "the whole pose clearly visible"
-        )
+        return "full body composition"
 
     if any(
         word in pose_lower
         for word in ("sitting", "kneeling", "crouching")
     ):
-        return (
-            "medium full shot, character filling most of the frame, "
-            "eye-level anime camera angle, clear readable silhouette, "
-            "face and body clearly visible"
-        )
+        return "medium full shot"
 
     if any(
         word in pose_lower
         for word in ("portrait", "close-up", "close up")
     ):
-        return "portrait composition, face clearly visible"
+        return "portrait composition"
 
-    return (
-        "medium full shot, character filling most of the frame, "
-        "balanced anime composition, clear silhouette, "
-        "natural eye-level camera angle"
-    )
+    return "full body composition"
 
 
 def join_prompt_parts(parts: list[str]) -> str:
@@ -150,7 +150,10 @@ def build_prompt(
     if pose_result["source"] == "free":
         automatic_composition = ""
     else:
-        automatic_composition = choose_composition(final_pose)
+        automatic_composition = choose_composition(
+            final_pose,
+            pose_result,
+        )
 
     final_prompt = join_prompt_parts(
         [

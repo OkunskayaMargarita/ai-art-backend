@@ -50,8 +50,6 @@
       "weight": 1.0,
       "required": [
         "lying comfortably on the stomach on a horizontal surface",
-        "upper body supported naturally by the forearms or elbows",
-        "pelvis resting on the supporting surface",
         "head turned back over one shoulder toward the camera"
       ],
       "variants": {
@@ -95,10 +93,6 @@
         ],
         "head": [
           {
-            "text": "looking back over one shoulder toward the camera",
-            "weight": 1.0
-          },
-          {
             "text": "head turned back with a slight downward tilt",
             "weight": 0.8
           },
@@ -129,7 +123,6 @@
 	  "name": "Руки заведены назад",
 	  "weight": 0.9,
 	  "required": [
-		"lying on the stomach on a horizontal surface",
 		"resting on the knees",
 		"both arms reaching backward along the sides of the body",
 		"her hands spread the buttocks",
@@ -146,25 +139,7 @@
 			"weight": 0.7
 		  }
 		],
-		"arms": [
-		  {
-			"text": "hands resting on the outer hips",
-			"weight": 1.0
-		  },
-		  {
-			"text": "hands resting on the upper thighs",
-			"weight": 0.9
-		  },
-		  {
-			"text": "hands placed symmetrically along the sides of the pelvis",
-			"weight": 0.8
-		  }
-		],
 		"legs": [
-		  {
-			"text": "legs extended comfortably with knees close together",
-			"weight": 1.0
-		  },
 		  {
 			"text": "one knee bent slightly",
 			"weight": 0.7

@@ -99,7 +99,7 @@
         ],
         "camera": [
           {
-            "text": "slightly elevated anime camera angle",
+            "text": "slightly elevated camera angle",
             "weight": 1.0
           },
           {
@@ -200,8 +200,7 @@
 		"required": [
 		  "lying on the back on a horizontal surface",
 		  "both legs bent and positioned on opposite sides of the frame",
-		  "pelvis directed toward the camera",
-		  "strong perspective foreshortening from a low frontal viewpoint"
+		  "pelvis directed toward the camera"
 		],
 		"variants": {
 		  "legs": [

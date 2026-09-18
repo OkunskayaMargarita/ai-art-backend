@@ -8,6 +8,7 @@ from services.danbooru_service import (
 
 
 GENERIC_TAG_REPLACEMENTS = {
+    # Уши
     "animal_ears": {
         "rabbit_ears",
         "fox_ears",
@@ -15,19 +16,46 @@ GENERIC_TAG_REPLACEMENTS = {
         "dog_ears",
         "wolf_ears",
     },
+
+    # Хвост
     "tail": {
         "rabbit_tail",
         "fox_tail",
         "cat_tail",
         "dog_tail",
         "wolf_tail",
+        "striped_tail",
     },
+
+    # Если внешний вид хвоста уже описан конкретнее,
+    # общий вид хвоста можно убрать.
+    "cat_tail": {
+        "striped_tail",
+    },
+
+    # Общий тип персонажа
     "animal_girl": {
         "rabbit_girl",
         "fox_girl",
         "cat_girl",
         "dog_girl",
         "wolf_girl",
+    },
+
+    # Общий цвет кожи ничего не добавляет,
+    # если конкретный цвет уже известен.
+    "colored_skin": {
+        "yellow_skin",
+        "blue_skin",
+        "green_skin",
+        "red_skin",
+        "purple_skin",
+        "pink_skin",
+        "orange_skin",
+        "black_skin",
+        "white_skin",
+        "grey_skin",
+        "gray_skin",
     },
 }
 
@@ -57,6 +85,63 @@ def remove_generic_duplicates(
         for tag in tags
         if tag in tag_set
     ]
+    
+def remove_furry_skin_duplicates(
+    tags: list[str],
+) -> list[str]:
+    """
+    Для furry-персонажей предпочитает конкретное описание
+    цвета шерсти аналогичному описанию цвета кожи.
+
+    furry + yellow_skin + yellow_fur
+    -> furry + yellow_fur
+    """
+    tag_set = set(tags)
+
+    if "furry" not in tag_set:
+        return tags
+
+    fur_colors = {
+        tag.removesuffix("_fur")
+        for tag in tag_set
+        if tag.endswith("_fur")
+    }
+
+    return [
+        tag
+        for tag in tags
+        if not (
+            tag.endswith("_skin")
+            and tag.removesuffix("_skin") in fur_colors
+        )
+    ]
+    
+def remove_redundant_gender_tags(
+    tags: list[str],
+) -> list[str]:
+    """
+    Удаляет общий furry, если уже присутствует
+    более конкретный furry_female или furry_male.
+
+    furry + furry_female -> furry_female
+    furry + furry_male -> furry_male
+    """
+    tag_set = set(tags)
+
+    if (
+        "furry" in tag_set
+        and (
+            "furry_female" in tag_set
+            or "furry_male" in tag_set
+        )
+    ):
+        return [
+            tag
+            for tag in tags
+            if tag != "furry"
+        ]
+
+    return tags
 
 
 def extract_copyright_tags(
@@ -113,7 +198,7 @@ def build_character_description(
     """
     Собирает итоговое описание идентичности персонажа.
     """
-    cleaned_identity_tags = remove_generic_duplicates(
+    cleaned_identity_tags = clean_identity_tags(
         identity_tags
     )
 
@@ -137,6 +222,18 @@ def build_character_description(
         unique_parts.append(normalized)
 
     return unique_parts
+    
+def clean_identity_tags(
+    tags: list[str],
+) -> list[str]:
+    """
+    Выполняет всю семантическую очистку identity-тегов.
+    """
+    cleaned_tags = remove_generic_duplicates(tags)
+    cleaned_tags = remove_furry_skin_duplicates(cleaned_tags)
+    cleaned_tags = remove_redundant_gender_tags(cleaned_tags)
+
+    return cleaned_tags
 
 
 def enhance_character_prompt(
@@ -190,7 +287,7 @@ def enhance_character_prompt(
         [],
     )
 
-    cleaned_identity_tags = remove_generic_duplicates(
+    cleaned_identity_tags = clean_identity_tags(
         identity_tags
     )
 

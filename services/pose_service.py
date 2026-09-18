@@ -151,8 +151,14 @@ def build_pose_prompt(
     preset: PosePreset,
     layout: PoseLayout,
 ) -> tuple[str, dict[str, str]]:
-    prompt_parts = [part.strip() for part in layout.required if part.strip()]
+    prompt_parts = [
+        part.strip()
+        for part in layout.required
+        if part.strip()
+    ]
+
     selected_variants: dict[str, str] = {}
+
     chance = (
         layout.optional_group_chance
         if layout.optional_group_chance is not None
@@ -163,15 +169,25 @@ def build_pose_prompt(
     random.shuffle(groups)
 
     for group_name, variants in groups:
-        if random.random() > chance:
-            continue
+        # Камера является частью композиции layout.
+        # Если группа camera существует, один её вариант
+        # выбирается всегда.
+        if group_name != "camera":
+            if random.random() > chance:
+                continue
+
         selected = weighted_variant_choice(variants)
+
         if not selected:
             continue
+
         selected_variants[group_name] = selected
         prompt_parts.append(selected)
 
-    return ", ".join(dict.fromkeys(prompt_parts)), selected_variants
+    return (
+        ", ".join(dict.fromkeys(prompt_parts)),
+        selected_variants,
+    )
 
 
 def choose_automatic_pose(context: str, width: int, height: int) -> PosePreset:
