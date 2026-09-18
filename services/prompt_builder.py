@@ -1,3 +1,5 @@
+import re
+
 from models.generation import GenerateRequest
 from models.profile import ProfileData
 from services.character_prompt_enhancer import enhance_character_prompt
@@ -106,6 +108,23 @@ def join_prompt_parts(parts: list[str]) -> str:
     unique_parts = list(dict.fromkeys(cleaned_parts))
 
     return ", ".join(unique_parts)
+    
+def apply_profile_prompt_replacements(
+    prompt: str,
+    profile_name: str | None,
+) -> str:
+    if not prompt:
+        return prompt
+
+    if profile_name and profile_name.casefold() == "futa":
+        prompt = re.sub(
+            r"\bvagina\b",
+            "penis",
+            prompt,
+            flags=re.IGNORECASE,
+        )
+
+    return prompt
 
 
 def build_prompt(
@@ -151,6 +170,11 @@ def build_prompt(
             data.user_negative,
         ]
     )
+    
+    final_prompt = apply_profile_prompt_replacements(
+    final_prompt,
+    data.profile_name,
+)
 
     return {
         "prompt": final_prompt,
