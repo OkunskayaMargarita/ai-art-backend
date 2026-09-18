@@ -147,7 +147,7 @@ def build_prompt(
     )
     final_pose = pose_result["prompt"]
 
-    if pose_result["source"] == "free":
+    if pose_result["source"] in ("free", "manual"):
         automatic_composition = ""
     else:
         automatic_composition = choose_composition(
