@@ -1,10 +1,26 @@
 {
   "default": {
     "name": "2D классический (рекомендуемый)",
-    "prompt": "clean expressive lineart, detailed cel shading, polished digital illustration"
+    "prompt": "clean expressive lineart, detailed cel shading, polished digital illustration",
+	"positive_remove": [],
+    "negative_remove": []
+  },
+  "realistic": {
+    "name": "Реалистичный",
+    "prompt": "real life photograph, real person, natural skin, natural hair, natural lighting",
+	"negative_prompt": "anime, anime style, illustration, digital art, 3d, 3d render, cgi, doll, plastic, wax figure",
+	"positive_remove": [
+    "hentai"
+    ],
+	"negative_remove": [
+      "photorealistic",
+      "realistic photography"
+    ]
   },
   "none": {
     "name": "Без указания стиля",
-    "prompt": ""
+    "prompt": "",
+	"positive_remove": [],
+    "negative_remove": []
   }
 }

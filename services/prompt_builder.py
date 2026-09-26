@@ -4,7 +4,12 @@ from models.generation import GenerateRequest
 from models.profile import ProfileData
 from services.character_prompt_enhancer import enhance_character_prompt
 from services.pose_service import resolve_pose
-from services.style_service import get_style_prompt
+from services.style_service import (
+    get_style_negative_prompt,
+    get_style_negative_remove,
+    get_style_positive_remove,
+    get_style_prompt,
+)
 
 
 def clean_part(value: str | None) -> str:
@@ -110,6 +115,33 @@ def join_prompt_parts(parts: list[str]) -> str:
 
     return ", ".join(unique_parts)
     
+def remove_prompt_tags(
+    prompt: str,
+    tags_to_remove: list[str],
+) -> str:
+    if not prompt or not tags_to_remove:
+        return prompt
+
+    remove_set = {
+        clean_part(tag).casefold()
+        for tag in tags_to_remove
+        if clean_part(tag)
+    }
+
+    prompt_parts = [
+        clean_part(part)
+        for part in prompt.split(",")
+        if clean_part(part)
+    ]
+
+    filtered_parts = [
+        part
+        for part in prompt_parts
+        if part.casefold() not in remove_set
+    ]
+
+    return ", ".join(filtered_parts)
+    
 def apply_profile_prompt_replacements(
     prompt: str,
     profile_name: str | None,
@@ -139,6 +171,9 @@ def build_prompt(
     ) = build_character_prompt(data.character)
     
     style_prompt = get_style_prompt(data.style_name)
+    style_negative_prompt = get_style_negative_prompt(data.style_name)
+    style_positive_remove = get_style_positive_remove(data.style_name)
+    style_negative_remove = get_style_negative_remove(data.style_name)
 
     pose_result = resolve_pose(
         pose_mode=data.pose_mode,
@@ -176,13 +211,24 @@ def build_prompt(
             data.extra_tags,
         ]
     )
+    
+    final_prompt = remove_prompt_tags(
+    final_prompt,
+    style_positive_remove,
+)
 
     final_negative_prompt = join_prompt_parts(
         [
             profile.base_negative,
+            style_negative_prompt,
             data.user_negative,
         ]
     )
+    
+    final_negative_prompt = remove_prompt_tags(
+    final_negative_prompt,
+    style_negative_remove,
+)
     
     final_prompt = apply_profile_prompt_replacements(
         final_prompt,
