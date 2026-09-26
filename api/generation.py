@@ -7,6 +7,7 @@ from models.generation import GenerateRequest
 from models.profile import ProfileData
 from services.profile_service import get_profile
 from services.prompt_builder import build_prompt
+from services.generation_control import request_stop
 
 
 router = APIRouter()
@@ -128,4 +129,12 @@ def generate_image(
         "requested_settings": data.model_dump(),
         "effective_settings": effective_data.model_dump(),
         "pose_result": prompt_data["pose_result"],
+    }
+    
+@router.post("/generate/stop")
+def stop_generation():
+    request_stop()
+
+    return {
+        "status": "stop_requested"
     }

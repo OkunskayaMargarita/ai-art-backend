@@ -14,6 +14,10 @@ from config.settings import (
     OUTPUT_DIR,
 )
 from models.generation import GenerateRequest
+from services.generation_control import (
+    is_stop_requested,
+    reset_stop_request,
+)
 
 
 generation_lock = threading.Lock()
@@ -233,6 +237,8 @@ def generate_with_comfy(
 
     all_images = []
 
+    reset_stop_request()
+
     try:
         with generation_lock:
             for iteration_index in range(settings.batch_count):
@@ -250,6 +256,9 @@ def generate_with_comfy(
                 images = extract_images(history)
 
                 all_images.extend(images)
+
+                if is_stop_requested():
+                    break
 
     except KeyError as exc:
         raise RuntimeError(
