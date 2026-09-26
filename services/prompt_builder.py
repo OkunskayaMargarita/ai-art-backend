@@ -140,14 +140,31 @@ def build_prompt(
     
     style_prompt = get_style_prompt(data.style_name)
 
-    pose_result = resolve_pose(
-        pose_mode=data.pose_mode,
-        manual_pose=data.pose,
-        pose_preset_id=data.pose_preset_id,
-        environment=data.background,
-        width=data.width,
-        height=data.height,
-    )
+    pose_override = clean_part(data.pose_override)
+
+    if (
+        data.pose_mode == "preset"
+        and pose_override
+    ):
+        pose_result = {
+            "source": "preset_override",
+            "preset_id": data.pose_preset_id,
+            "preset_name": None,
+            "layout_id": None,
+            "layout_name": None,
+            "prompt": pose_override,
+            "selected_variants": {},
+        }
+    else:
+        pose_result = resolve_pose(
+            pose_mode=data.pose_mode,
+            manual_pose=data.pose,
+            pose_preset_id=data.pose_preset_id,
+            environment=data.background,
+            width=data.width,
+            height=data.height,
+        )
+
     final_pose = pose_result["prompt"]
 
     if pose_result["source"] in ("free", "manual"):

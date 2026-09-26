@@ -18,6 +18,7 @@ class GenerateRequest(BaseModel):
     
     pose: str = ""
     pose_preset_id: str = ""
+    pose_override: str = ""
     
     extra_tags: str = ""
     user_negative: str = ""
