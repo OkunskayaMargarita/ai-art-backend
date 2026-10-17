@@ -31,7 +31,7 @@ class GenerateRequest(BaseModel):
     seed: int = -1
 
     batch_size: int = Field(default=1, ge=1, le=8)
-    batch_count: int = Field(default=1, ge=1, le=20)
+    batch_count: int = Field(default=1, ge=1)
 
     sampler_name: str = "er_sde"
     scheduler: str = "simple"

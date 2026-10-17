@@ -13,7 +13,7 @@ class ProfileData(BaseModel):
     cfg: float = Field(default=1.0, ge=0.0, le=30.0)
 
     batch_size: int = Field(default=1, ge=1, le=8)
-    batch_count: int = Field(default=1, ge=1, le=20)
+    batch_count: int = Field(default=1, ge=1)
 
     sampler_name: str = "er_sde"
     scheduler: str = "simple"
