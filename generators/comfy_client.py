@@ -1,5 +1,6 @@
 import copy
 import json
+import math
 import os
 import random
 import threading
@@ -91,6 +92,12 @@ NEGATIVE_PROMPT_NODE_ID = "60:12"
 SAMPLER_NODE_ID = "60:19"
 LATENT_NODE_ID = "60:28"
 SAVE_IMAGE_NODE_ID = "46"
+OUTPUT_SCALE_NODE_ID = "waigen_output_scale"
+
+# Keep existing presets through 2560x1440 unchanged; this is a compatibility
+# threshold, not a guaranteed model limit. Use a conservative base for 4K.
+MAX_DIRECT_GENERATION_PIXELS = 2560 * 1440
+LARGE_OUTPUT_BASE_PIXELS = 1536 * 864
 
 
 def load_anima_workflow() -> dict:
@@ -130,6 +137,31 @@ def prepare_workflow(
     workflow[LATENT_NODE_ID]["inputs"]["batch_size"] = (
         settings.batch_size
     )
+
+    output_pixels = settings.width * settings.height
+    if output_pixels > MAX_DIRECT_GENERATION_PIXELS:
+        scale = math.sqrt(LARGE_OUTPUT_BASE_PIXELS / output_pixels)
+        # Align the base latent to the model grid, retaining the aspect ratio
+        # to within rounding. Resize decoded pixels, never the noisy latent.
+        workflow[LATENT_NODE_ID]["inputs"]["width"] = max(
+            64, int(settings.width * scale) // 16 * 16
+        )
+        workflow[LATENT_NODE_ID]["inputs"]["height"] = max(
+            64, int(settings.height * scale) // 16 * 16
+        )
+        workflow[OUTPUT_SCALE_NODE_ID] = {
+            "class_type": "ImageScale",
+            "inputs": {
+                "image": workflow[SAVE_IMAGE_NODE_ID]["inputs"]["images"],
+                "upscale_method": "lanczos",
+                "width": settings.width,
+                "height": settings.height,
+                "crop": "disabled",
+            },
+        }
+        workflow[SAVE_IMAGE_NODE_ID]["inputs"]["images"] = [
+            OUTPUT_SCALE_NODE_ID, 0
+        ]
 
     sampler_inputs = workflow[SAMPLER_NODE_ID]["inputs"]
 
