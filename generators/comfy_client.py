@@ -18,9 +18,73 @@ from services.generation_control import (
     is_stop_requested,
     reset_stop_request,
 )
+from pathlib import Path
 
 
 generation_lock = threading.Lock()
+
+image_counter_lock = threading.Lock()
+
+BACKEND_DIR = Path(__file__).resolve().parent.parent
+
+DATA_DIR = BACKEND_DIR / "data"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+IMAGE_COUNTER_FILE = DATA_DIR / "image_counter.json"
+
+
+def get_next_image_number() -> int:
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+    last_number = 0
+
+    if os.path.exists(IMAGE_COUNTER_FILE):
+        try:
+            with open(
+                IMAGE_COUNTER_FILE,
+                "r",
+                encoding="utf-8",
+            ) as counter_file:
+                counter_data = json.load(counter_file)
+
+            last_number = int(
+                counter_data.get("last_image_number", 0)
+            )
+
+        except (OSError, ValueError, TypeError):
+            raise RuntimeError(
+                "Не удалось прочитать счётчик изображений."
+            )
+
+    # Дополнительная защита от совпадения с уже
+    # существующими файлами.
+    for filename in os.listdir(OUTPUT_DIR):
+        name, extension = os.path.splitext(filename)
+
+        if extension.lower() == ".png" and name.isdigit():
+            last_number = max(last_number, int(name))
+
+    return last_number + 1
+
+
+def save_image_counter(number: int) -> None:
+    temporary_file = IMAGE_COUNTER_FILE.with_suffix(".json.tmp")
+
+    with open(
+        temporary_file,
+        "w",
+        encoding="utf-8",
+    ) as counter_file:
+        json.dump(
+            {"last_image_number": number},
+            counter_file,
+            indent=2,
+        )
+
+    os.replace(
+        temporary_file,
+        IMAGE_COUNTER_FILE,
+    )
 
 PROMPT_NODE_ID = "60:11"
 NEGATIVE_PROMPT_NODE_ID = "60:12"
@@ -191,19 +255,23 @@ def download_output_image(image_data: dict) -> dict:
             f"{response.status_code}: {response.text}"
         )
 
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    with image_counter_lock:
+        image_number = get_next_image_number()
+        
+        filename = f"{image_number}.png"
+        filepath = os.path.join(OUTPUT_DIR, filename)
 
-    filename = f"{uuid.uuid4()}.png"
-    filepath = os.path.join(OUTPUT_DIR, filename)
+    # Режим xb запрещает перезаписывать существующий файл.
+        with open(filepath, "xb") as output_file:
+            output_file.write(response.content)
 
-    with open(filepath, "wb") as output_file:
-        output_file.write(response.content)
+        save_image_counter(image_number)
 
-    return {
-        "filename": filename,
-        "filepath": filepath,
-        "image_url": f"/outputs/{filename}",
-    }
+        return {
+            "filename": filename,
+            "filepath": filepath,
+            "image_url": f"/outputs/{filename}",
+        }
 
 
 def extract_images(prompt_history: dict) -> list[dict]:
