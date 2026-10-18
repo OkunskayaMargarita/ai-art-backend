@@ -13,6 +13,8 @@ from config.settings import (
     ANIMA_WORKFLOW_PATH,
     COMFY_API_URL,
     OUTPUT_DIR,
+    REFERENCE_EDIT_WORKFLOW_PATH,
+    REFERENCE_EDIT_NEGATIVE_CFG,
 )
 from models.generation import GenerateRequest
 from services.generation_control import (
@@ -124,7 +126,11 @@ def prepare_workflow(
     negative_prompt: str,
     settings: GenerateRequest,
     seed: int,
+    reference_image: str | None = None,
+    reference_mask: str | None = None,
 ) -> dict:
+    if settings.reference_instruction_edit:
+        return prepare_instruction_edit_workflow(prompt, settings, seed, reference_image, negative_prompt=negative_prompt)
     workflow = copy.deepcopy(load_anima_workflow())
 
     workflow[PROMPT_NODE_ID]["inputs"]["text"] = prompt
@@ -173,11 +179,105 @@ def prepare_workflow(
     sampler_inputs["sampler_name"] = "er_sde"
     sampler_inputs["scheduler"] = "simple"
     sampler_inputs["denoise"] = 1
+    if settings.reference_enabled:
+        if not reference_image:
+            raise RuntimeError("Референс не загружен в ComfyUI.")
+        base = workflow[LATENT_NODE_ID]["inputs"]
+        workflow["waigen_reference_load"] = {
+            "class_type": "LoadImage", "inputs": {"image": reference_image},
+        }
+        workflow["waigen_reference_resize"] = {
+            "class_type": "ImageScale", "inputs": {
+                "image": ["waigen_reference_load", 0], "upscale_method": "lanczos",
+                "width": base["width"], "height": base["height"],
+                "crop": "disabled" if settings.reference_mask_id else "center",
+            },
+        }
+        workflow["waigen_reference_encode"] = {
+            "class_type": "VAEEncode", "inputs": {
+                "pixels": ["waigen_reference_resize", 0], "vae": ["60:15", 0],
+            },
+        }
+        if settings.reference_mask_id:
+            if not reference_mask:
+                raise RuntimeError("Маска не загружена в ComfyUI.")
+            workflow["waigen_edit_mask_load"] = {
+                "class_type": "LoadImage", "inputs": {"image": reference_mask},
+            }
+            workflow["waigen_edit_mask_resize"] = {
+                "class_type": "ImageScale", "inputs": {
+                    "image": ["waigen_edit_mask_load", 0], "upscale_method": "nearest-exact",
+                    "width": base["width"], "height": base["height"], "crop": "disabled",
+                },
+            }
+            workflow["waigen_edit_mask"] = {
+                "class_type": "ImageToMask", "inputs": {
+                    "image": ["waigen_edit_mask_resize", 0], "channel": "red",
+                },
+            }
+            workflow["waigen_reference_encode"]["class_type"] = "VAEEncodeForInpaint"
+            workflow["waigen_reference_encode"]["inputs"].update({
+                "mask": ["waigen_edit_mask", 0], "grow_mask_by": 6,
+            })
+        workflow["waigen_reference_batch"] = {
+            "class_type": "RepeatLatentBatch", "inputs": {
+                "samples": ["waigen_reference_encode", 0], "amount": settings.batch_size,
+            },
+        }
+        sampler_inputs["latent_image"] = ["waigen_reference_batch", 0]
+        sampler_inputs["denoise"] = settings.reference_strength
 
     workflow[SAVE_IMAGE_NODE_ID]["inputs"]["filename_prefix"] = (
         f"Anima_{uuid.uuid4().hex[:8]}"
     )
 
+    return workflow
+
+
+def prepare_instruction_edit_workflow(prompt: str, settings: GenerateRequest, seed: int,
+                                      reference_image: str | None, *, negative_prompt: str = "") -> dict:
+    if not reference_image:
+        raise RuntimeError("Референс не загружен для редактирования.")
+    path = BACKEND_DIR / REFERENCE_EDIT_WORKFLOW_PATH
+    with path.open(encoding="utf-8") as file:
+        workflow = json.load(file)
+    workflow["edit_image"]["inputs"]["image"] = reference_image
+    workflow["edit_text"]["inputs"]["text"] = prompt
+    if negative_prompt.strip():
+        workflow["edit_negative_text"] = {"class_type": "CLIPTextEncode", "inputs": {
+            "text": negative_prompt, "clip": ["edit_clip", 0],
+        }}
+        workflow["edit_negative"]["inputs"]["conditioning"] = ["edit_negative_text", 0]
+        # CFG=1 skips the negative branch entirely in ComfyUI.
+        workflow["edit_guider"]["inputs"]["cfg"] = REFERENCE_EDIT_NEGATIVE_CFG
+    workflow["edit_noise"]["inputs"]["noise_seed"] = seed
+    for node in ("edit_resize", "edit_sigmas", "edit_latent"):
+        workflow[node]["inputs"].update({"width": settings.width, "height": settings.height})
+    workflow["edit_latent"]["inputs"]["batch_size"] = settings.batch_size
+    from services.reference_style_service import reference_rendering_style
+    if settings.reference_preserve_style and reference_rendering_style(settings.reference_id):
+        # Keep the complete editing schedule: partial denoising prevented scene
+        # and garment changes. Style is supplied through visual conditioning.
+        # A magnified detail exposes surface marks lost in the full-frame view.
+        # Both references remain image conditioning, never a pixel overlay.
+        width = max(32, settings.width // 4 // 16 * 16)
+        height = max(32, settings.height // 4 // 16 * 16)
+        workflow["edit_style_crop"] = {
+            "class_type": "ImageCrop", "inputs": {
+                "image": ["edit_resize", 0], "width": width, "height": height,
+                "x": (settings.width - width) // 2, "y": settings.height // 10,
+            },
+        }
+        workflow["edit_style_encode"] = {
+            "class_type": "VAEEncode", "inputs": {"pixels": ["edit_style_crop", 0], "vae": ["edit_vae", 0]},
+        }
+        for branch in ("positive", "negative"):
+            name = f"edit_style_{branch}"
+            workflow[name] = {"class_type": "ReferenceLatent", "inputs": {
+                "conditioning": [f"edit_{branch}", 0], "latent": ["edit_style_encode", 0],
+            }}
+            workflow["edit_guider"]["inputs"][branch] = [name, 0]
+    workflow[SAVE_IMAGE_NODE_ID]["inputs"]["filename_prefix"] = f"WaiGenEdit_{uuid.uuid4().hex[:8]}"
     return workflow
 
 
@@ -263,7 +363,7 @@ def wait_for_history(
     )
 
 
-def download_output_image(image_data: dict) -> dict:
+def download_output_image(image_data: dict, settings: GenerateRequest | None = None) -> dict:
     params = {
         "filename": image_data["filename"],
         "subfolder": image_data.get("subfolder", ""),
@@ -287,6 +387,26 @@ def download_output_image(image_data: dict) -> dict:
             f"{response.status_code}: {response.text}"
         )
 
+    content = response.content
+    output_size = None
+    if settings and settings.reference_mask_id:
+        from services.image_reference_service import composite_reference_edit
+        try:
+            content, output_size = composite_reference_edit(settings.reference_id, settings.reference_mask_id, content)
+        except (OSError, ValueError) as exc:
+            raise RuntimeError("Не удалось восстановить исходные пиксели вне маски. Результат не сохранён.") from exc
+    elif settings and settings.reference_instruction_edit:
+        from PIL import Image
+        from io import BytesIO
+        from services.image_reference_service import reference_path
+        with Image.open(reference_path(settings.reference_id)) as original:
+            output_size = original.size
+        with Image.open(BytesIO(content)) as generated:
+            resized = generated.convert("RGB").resize(output_size, Image.Resampling.LANCZOS)
+        buffer = BytesIO()
+        resized.save(buffer, format="PNG")
+        content = buffer.getvalue()
+
     with image_counter_lock:
         image_number = get_next_image_number()
         
@@ -295,7 +415,7 @@ def download_output_image(image_data: dict) -> dict:
 
     # Режим xb запрещает перезаписывать существующий файл.
         with open(filepath, "xb") as output_file:
-            output_file.write(response.content)
+            output_file.write(content)
 
         save_image_counter(image_number)
 
@@ -303,17 +423,18 @@ def download_output_image(image_data: dict) -> dict:
             "filename": filename,
             "filepath": filepath,
             "image_url": f"/outputs/{filename}",
+            **({"width": output_size[0], "height": output_size[1]} if output_size else {}),
         }
 
 
-def extract_images(prompt_history: dict) -> list[dict]:
+def extract_images(prompt_history: dict, settings: GenerateRequest | None = None) -> list[dict]:
     outputs = prompt_history.get("outputs", {})
     saved_images = []
 
     for node_output in outputs.values():
         for image_data in node_output.get("images", []):
             saved_images.append(
-                download_output_image(image_data)
+                download_output_image(image_data, settings)
             )
 
     if not saved_images:
@@ -341,6 +462,39 @@ def generate_with_comfy(
 
     try:
         with generation_lock:
+            reference_image = None
+            reference_mask = None
+            if settings.reference_enabled:
+                from services.image_reference_service import reference_path
+                try:
+                    path = reference_path(settings.reference_id)
+                    with path.open("rb") as image_file:
+                        response = requests.post(
+                            f"{COMFY_API_URL}/upload/image",
+                            files={"image": (f"waigen_{settings.reference_id}.png", image_file, "image/png")},
+                            data={"type": "input", "overwrite": "true"}, timeout=60,
+                        )
+                    response.raise_for_status()
+                    uploaded = response.json()
+                    name = uploaded["name"]
+                    subfolder = uploaded.get("subfolder", "")
+                    reference_image = f"{subfolder}/{name}" if subfolder else name
+                    if settings.reference_mask_id:
+                        from services.image_reference_service import reference_mask_path
+                        mask_path = reference_mask_path(settings.reference_id, settings.reference_mask_id)
+                        with mask_path.open("rb") as mask_file:
+                            response = requests.post(
+                                f"{COMFY_API_URL}/upload/image",
+                                files={"image": (f"waigen_mask_{settings.reference_mask_id}.png", mask_file, "image/png")},
+                                data={"type": "input", "overwrite": "true"}, timeout=60,
+                            )
+                        response.raise_for_status()
+                        uploaded = response.json()
+                        name = uploaded["name"]
+                        subfolder = uploaded.get("subfolder", "")
+                        reference_mask = f"{subfolder}/{name}" if subfolder else name
+                except (ValueError, OSError, requests.RequestException, KeyError) as exc:
+                    raise RuntimeError("Не удалось передать референс в ComfyUI. Проверьте подключение и повторите загрузку.") from exc
             for iteration_index in range(settings.batch_count):
                 iteration_seed = actual_seed + iteration_index
 
@@ -349,11 +503,13 @@ def generate_with_comfy(
                     negative_prompt=negative_prompt,
                     settings=settings,
                     seed=iteration_seed,
+                    reference_image=reference_image,
+                    reference_mask=reference_mask,
                 )
 
                 prompt_id = queue_workflow(workflow)
                 history = wait_for_history(prompt_id)
-                images = extract_images(history)
+                images = extract_images(history, settings) if (settings.reference_mask_id or settings.reference_instruction_edit) else extract_images(history)
 
                 all_images.extend(images)
 

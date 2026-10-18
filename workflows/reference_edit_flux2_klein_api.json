@@ -1,0 +1,20 @@
+{
+  "edit_model": {"class_type": "UNETLoader", "inputs": {"unet_name": "flux-2-klein-4b-fp8.safetensors", "weight_dtype": "default"}},
+  "edit_clip": {"class_type": "CLIPLoader", "inputs": {"clip_name": "qwen_3_4b_fp8_mixed.safetensors", "type": "flux2", "device": "default"}},
+  "edit_vae": {"class_type": "VAELoader", "inputs": {"vae_name": "flux2-vae.safetensors"}},
+  "edit_image": {"class_type": "LoadImage", "inputs": {"image": "reference.png"}},
+  "edit_resize": {"class_type": "ImageScale", "inputs": {"image": ["edit_image", 0], "width": 1024, "height": 1024, "upscale_method": "lanczos", "crop": "disabled"}},
+  "edit_ref_latent": {"class_type": "VAEEncode", "inputs": {"pixels": ["edit_resize", 0], "vae": ["edit_vae", 0]}},
+  "edit_text": {"class_type": "CLIPTextEncode", "inputs": {"text": "", "clip": ["edit_clip", 0]}},
+  "edit_zero": {"class_type": "ConditioningZeroOut", "inputs": {"conditioning": ["edit_text", 0]}},
+  "edit_positive": {"class_type": "ReferenceLatent", "inputs": {"conditioning": ["edit_text", 0], "latent": ["edit_ref_latent", 0]}},
+  "edit_negative": {"class_type": "ReferenceLatent", "inputs": {"conditioning": ["edit_zero", 0], "latent": ["edit_ref_latent", 0]}},
+  "edit_guider": {"class_type": "CFGGuider", "inputs": {"model": ["edit_model", 0], "positive": ["edit_positive", 0], "negative": ["edit_negative", 0], "cfg": 1.0}},
+  "edit_noise": {"class_type": "RandomNoise", "inputs": {"noise_seed": 42}},
+  "edit_sampler": {"class_type": "KSamplerSelect", "inputs": {"sampler_name": "euler"}},
+  "edit_sigmas": {"class_type": "Flux2Scheduler", "inputs": {"steps": 4, "width": 1024, "height": 1024}},
+  "edit_latent": {"class_type": "EmptyFlux2LatentImage", "inputs": {"width": 1024, "height": 1024, "batch_size": 1}},
+  "edit_sample": {"class_type": "SamplerCustomAdvanced", "inputs": {"noise": ["edit_noise", 0], "guider": ["edit_guider", 0], "sampler": ["edit_sampler", 0], "sigmas": ["edit_sigmas", 0], "latent_image": ["edit_latent", 0]}},
+  "edit_decode": {"class_type": "VAEDecode", "inputs": {"samples": ["edit_sample", 0], "vae": ["edit_vae", 0]}},
+  "46": {"class_type": "SaveImage", "inputs": {"images": ["edit_decode", 0], "filename_prefix": "WaiGenEdit"}}
+}

@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+from api.image_references import router as image_references_router
 from api.generation import router as generation_router
 from api.profiles import router as profiles_router
 from api.models import router as models_router
@@ -27,6 +28,7 @@ app.add_middleware(
 )
 
 app.include_router(generation_router)
+app.include_router(image_references_router)
 app.include_router(profiles_router)
 app.include_router(models_router)
 app.include_router(characters_router)

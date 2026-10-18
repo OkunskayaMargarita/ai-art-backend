@@ -8,6 +8,7 @@ from models.profile import ProfileData
 from services.profile_service import get_profile
 from services.prompt_builder import build_prompt
 from services.generation_control import request_stop
+from config.settings import REFERENCE_EDIT_NEGATIVE_CFG
 
 
 router = APIRouter()
@@ -57,6 +58,26 @@ def generate_image(
             ),
         )
 
+    if data.reference_mask_id and not data.reference_enabled:
+        raise HTTPException(400, "Локальная правка требует референс.")
+    if data.reference_instruction_edit:
+        if not data.reference_enabled or not data.reference_edit_prompt.strip():
+            raise HTTPException(400, "Загрузите референс и опишите, что нужно изменить.")
+        if data.reference_mask_id:
+            raise HTTPException(400, "Правка по инструкции выполняется без маски.")
+    if data.reference_edit_prompt.strip() and not data.reference_mask_id and not data.reference_instruction_edit:
+        raise HTTPException(400, "Выделите маску: изменение без области не допускается.")
+    if data.reference_enabled:
+        from services.image_reference_service import reference_path, reference_mask_path
+        try:
+            reference_path(data.reference_id)
+            if data.reference_mask_id:
+                reference_mask_path(data.reference_id, data.reference_mask_id)
+                if not data.reference_edit_prompt.strip():
+                    raise ValueError("Опишите желаемое изменение выделенной области.")
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     effective_data = data.model_copy(
         update={
             "steps": data.steps,
@@ -67,13 +88,28 @@ def generate_image(
             "hires_enabled": False,
         }
     )
-
-    prompt_data = build_prompt(
-        data=effective_data,
-        profile=profile,
-    )
+    if data.reference_mask_id or data.reference_instruction_edit:
+        from PIL import Image
+        import math
+        with Image.open(reference_path(data.reference_id)) as image:
+            scale = min(1.0, 4096 / max(image.size))
+            if data.reference_instruction_edit:
+                scale = min(scale, math.sqrt(1024 * 1024 / (image.width * image.height)))
+            working_width = max(64, int(image.width * scale) // 16 * 16)
+            working_height = max(64, int(image.height * scale) // 16 * 16)
+        effective_data = effective_data.model_copy(update={"width": working_width, "height": working_height})
+        if data.reference_instruction_edit:
+            effective_data = effective_data.model_copy(update={
+                "steps": 4, "cfg": 1.0, "sampler_name": "euler", "scheduler": "flux2",
+            })
 
     try:
+        prompt_data = build_prompt(
+            data=effective_data,
+            profile=profile,
+        )
+        if effective_data.reference_instruction_edit and prompt_data["negative_prompt"].strip():
+            effective_data = effective_data.model_copy(update={"cfg": REFERENCE_EDIT_NEGATIVE_CFG})
         generation_result = generate_with_comfy(
             prompt=prompt_data["prompt"],
             negative_prompt=prompt_data["negative_prompt"],
@@ -111,7 +147,7 @@ def generate_image(
 
     return {
         "status": "images_generated",
-        "engine": "anima",
+        "engine": "flux2_klein" if data.reference_instruction_edit else "anima",
         "profile_name": data.profile_name,
         "positive_prompt": prompt_data["prompt"],
         "negative_prompt": prompt_data["negative_prompt"],

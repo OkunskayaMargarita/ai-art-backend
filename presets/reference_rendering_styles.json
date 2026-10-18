@@ -1,0 +1,47 @@
+[
+  {
+    "id": "painterly",
+    "labels": ["a painterly anime illustration with visible rough brush strokes and irregular color patches", "an expressive digital painting with textured brushwork and broken painted edges", "a hand painted portrait with layered brush marks"],
+    "instruction": "Paint new content in exactly the original technique: visible rough brush strokes, irregular color patches, broken edges and layered painted shadows. Preserve the original brushwork. Do not clean up or smooth the painting into cel shading, crisp outlines or a realistic render."
+  },
+  {
+    "id": "cel",
+    "labels": ["an anime drawing with clean outlines, flat colors and crisp cel shading", "a clean cel shaded cartoon illustration", "a polished anime illustration with smooth gradients and precise line art"],
+    "instruction": "Match the reference's line weight, flat color shapes, cel shading and edge sharpness; draw new objects with the same simplified shapes rather than realistic materials."
+  },
+  {
+    "id": "watercolor",
+    "labels": ["a watercolor painting with transparent washes, paper grain and soft bleeding edges", "a watercolor anime portrait on textured paper", "a delicate watercolor illustration with translucent pigments"],
+    "instruction": "Match translucent watercolor washes, pigment variation, paper texture and soft bleeding edges throughout the new content."
+  },
+  {
+    "id": "pencil",
+    "labels": ["a rough pencil sketch with graphite strokes and crosshatching", "a colored pencil illustration on paper", "a hand drawn pencil portrait with visible sketch lines"],
+    "instruction": "Match pencil marks, hatching, paper grain and unfinished sketch edges; avoid smooth rendered surfaces."
+  },
+  {
+    "id": "ink",
+    "labels": ["a black and white manga ink drawing with screentones and hatching", "a monochrome pen and ink illustration", "a black and white comic with bold ink lines"],
+    "instruction": "Match the ink linework, hatching, tonal treatment and limited palette of the reference; do not introduce realistic shading."
+  },
+  {
+    "id": "pixel",
+    "labels": ["pixel art with a limited palette and visible square pixels", "a pixel art character in a retro videogame", "a low resolution pixel illustration"],
+    "instruction": "Match the pixel grid, stepped edges, palette size and pixel shading; no smooth gradients or antialiased vector edges."
+  },
+  {
+    "id": "vector",
+    "labels": ["a flat vector illustration with geometric shapes and solid colors", "a simple vector cartoon with minimal flat shading", "a flat graphic illustration with a limited palette"],
+    "instruction": "Match flat vector shapes, simple geometry, solid fills and the reference's limited shading."
+  },
+  {
+    "id": "3d",
+    "labels": ["a three dimensional CGI character render", "a stylized 3D animated movie frame", "a realistic 3D render with physically based materials"],
+    "instruction": "Match the reference's 3D material treatment, surface roughness, lighting model and degree of stylization."
+  },
+  {
+    "id": "photo",
+    "labels": ["a real photograph of a person", "a photographic portrait with natural skin texture", "a photograph of a landscape or interior"],
+    "instruction": "Match photographic texture, lens characteristics, depth of field, grain and natural material detail."
+  }
+]

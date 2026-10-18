@@ -3,3 +3,7 @@ uvicorn
 pydantic
 requests
 pillow
+numpy
+onnxruntime>=1.17.0
+huggingface-hub
+tokenizers>=0.20.0

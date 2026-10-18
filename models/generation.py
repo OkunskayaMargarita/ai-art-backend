@@ -2,6 +2,20 @@ from pydantic import BaseModel, Field
 from typing import Literal
 
 class GenerateRequest(BaseModel):
+    tags_from_reference: bool = False
+    reference_character_name: str = Field(default="", max_length=1000)
+    reference_character_traits: list[str] = Field(default_factory=list, max_length=64)
+    reference_id: str = Field(default="", pattern=r"^(?:[a-f0-9]{32})?$")
+    reference_enabled: bool = False
+    reference_prompt_from_fields: bool = False
+    reference_instruction_edit: bool = False
+    reference_preserve_style: bool = True
+    reference_mask_id: str = Field(default="", pattern=r"^(?:[a-f0-9]{32})?$")
+    reference_edit_prompt: str = Field(default="", max_length=8000)
+    reference_prompt: str = Field(default="", max_length=16000)
+    reference_changes: str = Field(default="", max_length=8000)
+    reference_strength: float = Field(default=0.35, ge=0.05, le=0.95)
+
     profile_name: str = ""
     style_name: str = "default"
 

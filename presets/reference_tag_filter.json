@@ -1,0 +1,42 @@
+{
+  "low_priority_anatomy": [
+    "collarbone", "collarbones", "clavicle", "clavicles",
+    "armpit", "armpits", "navel", "belly_button", "midriff",
+    "shoulder", "shoulders", "shoulder_blade", "shoulder_blades",
+    "upper_arm", "upper_arms", "forearm", "forearms", "elbow", "elbows",
+    "wrist", "wrists", "palm", "palms", "hip", "hips", "thigh", "thighs",
+    "knee", "knees", "kneepit", "kneepits", "shin", "shins",
+    "ankle", "ankles", "sole", "soles",
+    "toe", "toes", "fingernails", "toenails"
+  ],
+  "visibility_modifiers": ["bare", "visible", "exposed", "covered", "sweaty", "detailed"],
+  "excluded_overlay_tags": [
+    "artist_name", "artist_logo", "web_address", "url", "dated", "timestamp",
+    "copyright_notice", "copyright_symbol", "speech_bubble", "thought_bubble",
+    "translation_request", "commentary_request", "commentary", "hashtag",
+    "kanji", "hiragana", "katakana", "roman_numerals", "qr_code", "barcode"
+  ],
+  "identity_trait_roots": [
+    "hairstyle", "makeup", "body_markings", "facial_mark", "facial_markings",
+    "bodypaint", "facepaint", "tattoo", "scar", "jewelry", "hair_ornament"
+  ],
+  "identity_trait_words": [
+    "hair", "fur", "skin", "scales", "bangs", "sidelocks", "ponytail", "ponytails",
+    "braid", "braids", "twintails", "bun", "buns", "ahoge", "afro", "mohawk",
+    "undercut", "cornrows", "dreadlocks", "ringlets", "payot", "payots",
+    "makeup", "eyeliner", "eyeshadow", "lipstick", "mascara", "eyelashes",
+    "eyebrows", "blusher", "bodypaint", "facepaint", "tattoo", "tattoos",
+    "markings", "freckles", "mole", "moles", "birthmark", "scar", "scars",
+    "hairclip", "hairband", "scrunchie", "earrings", "necklace", "choker",
+    "piercing", "piercings", "bracelet", "anklet", "armlet", "tiara", "headdress"
+  ],
+  "identity_trait_tags": [
+    "hime_cut", "bob_cut", "pixie_cut", "crew_cut", "buzz_cut", "widow's_peak",
+    "face_paint", "body_paint", "slit_pupils", "colored_sclera", "pointy_ears"
+  ],
+  "excluded_overlay_words": [
+    "text", "watermark", "watermarks", "watermarked", "signature", "signatures",
+    "username", "usernames", "logo", "logos", "lettering", "typography",
+    "caption", "captions", "subtitle", "subtitles", "dialogue"
+  ]
+}

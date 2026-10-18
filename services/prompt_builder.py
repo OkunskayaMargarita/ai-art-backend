@@ -99,15 +99,41 @@ def choose_composition(
     return "full body composition"
 
 
-def join_prompt_parts(parts: list[str]) -> str:
-    cleaned_parts = [
-        clean_part(part)
-        for part in parts
-        if clean_part(part)
-    ]
-
-    unique_parts = list(dict.fromkeys(cleaned_parts))
-
+def join_prompt_parts(parts: list[str], *, semantic: bool = False) -> str:
+    # Split only at top-level commas, preserving weighted expressions and LoRAs.
+    unique_parts = []
+    seen = set()
+    for part in parts:
+        start = depth = 0
+        text = clean_part(part)
+        escaped = False
+        for index, char in enumerate(text + ","):
+            if escaped:
+                escaped = False
+                continue
+            if char == "\\":
+                escaped = True
+            elif char in "([{<":
+                depth += 1
+            elif char in ")]}>":
+                depth = max(0, depth - 1)
+            elif char == "," and depth == 0:
+                tag = text[start:index].strip()
+                key = " ".join(tag.replace("_", " ").casefold().split())
+                if key and key not in seen:
+                    unique_parts.append(tag)
+                    seen.add(key)
+                start = index + 1
+        # Keep malformed/unclosed user expressions intact rather than discard them.
+        if start < len(text):
+            tag = text[start:].strip()
+            key = " ".join(tag.replace("_", " ").casefold().split())
+            if key and key not in seen:
+                unique_parts.append(tag)
+                seen.add(key)
+    if semantic:
+        from services.tag_semantics import remove_implied_tags
+        unique_parts = remove_implied_tags(unique_parts)
     return ", ".join(unique_parts)
     
 def apply_profile_prompt_replacements(
@@ -132,11 +158,71 @@ def build_prompt(
     data: GenerateRequest,
     profile: ProfileData,
 ) -> dict:
+    if data.reference_instruction_edit:
+        instruction = (
+            f"Edit image 1: {data.reference_edit_prompt.strip()}. "
+            "Apply the requested change completely, replacing conflicting original features. "
+            "Preserve only unrequested details, including identity and framing. "
+        )
+        if data.reference_preserve_style:
+            from services.reference_style_service import reference_rendering_style
+
+            style = reference_rendering_style(data.reference_id)
+            if style:
+                instruction += (
+                    "Image 2 shows a close-up of the original rendering technique, not new content. "
+                    "Unless explicitly requested otherwise, use exactly that technique for all changed "
+                    "and new elements, including the background. "
+                )
+                instruction += f"{style['instruction']} "
+            else:
+                instruction += (
+                    "Unless explicitly requested otherwise, preserve the reference's rendering technique "
+                    "in all new elements: match its marks, edges, shading, texture and abstraction. "
+                )
+        else:
+            instruction += "Apply the requested style change consistently throughout the image. "
+        instruction += "Change only what was requested. Do not add text, signatures or watermarks."
+        return {
+            "prompt": instruction,
+            "negative_prompt": join_prompt_parts([profile.base_negative, data.user_negative]),
+            "character_data": {},
+            "character_warning": None, "selected_style": "none", "style_prompt": "",
+            "selected_pose": "", "selected_composition": "",
+            "pose_result": {"source": "instruction_edit", "prompt": ""},
+        }
+    if data.reference_enabled and data.reference_mask_id:
+        return {
+            "prompt": join_prompt_parts([profile.base_positive, data.reference_edit_prompt], semantic=True),
+            "negative_prompt": join_prompt_parts([profile.base_negative, data.user_negative]),
+            "character_data": {}, "character_warning": None,
+            "selected_style": "none", "style_prompt": "", "selected_pose": "",
+            "selected_composition": "", "pose_result": {"source": "reference_edit", "prompt": ""},
+        }
+    # Reference mode deliberately avoids automatic background, pose and identity additions.
+    if data.reference_enabled and not data.reference_prompt_from_fields:
+        return {
+            "prompt": join_prompt_parts([data.reference_prompt, data.reference_changes], semantic=True),
+            "negative_prompt": join_prompt_parts([profile.base_negative, data.user_negative]),
+            "character_data": {}, "character_warning": None,
+            "selected_style": "default", "style_prompt": "",
+            "selected_pose": "", "selected_composition": "",
+            "pose_result": {"source": "reference", "prompt": ""},
+        }
+
     (
         character_prompt,
         character_data,
         character_warning,
-    ) = build_character_prompt(data.character)
+    ) = ((data.character, {"source": "reference_tags"}, None)
+         if data.tags_from_reference else build_character_prompt(data.character))
+    if (data.tags_from_reference and data.reference_character_name
+            and data.character == data.reference_character_name):
+        # Traits were confirmed during analysis; keep the snapshot so a network
+        # failure on generation cannot lose traits omitted from the visible form.
+        character_prompt = join_prompt_parts([data.character, *data.reference_character_traits])
+        character_data = {"source": "reference_character", "found": True,
+                          "input": data.character, "enhanced_prompt": character_prompt}
     
     style_prompt = get_style_prompt(data.style_name)
 
@@ -205,6 +291,7 @@ def build_prompt(
         final_prompt,
         data.profile_name,
     )
+    final_prompt = join_prompt_parts([final_prompt], semantic=True)
 
     return {
         "prompt": final_prompt,
